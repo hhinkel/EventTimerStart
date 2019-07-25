@@ -32,7 +32,7 @@
             android:layout_column="0"
             android:layout_columnSpan="3"
             android:layout_gravity="center|fill"
-            android:layout_row="1"
+            android:layout_row="0"
             android:ems="10"
             android:hint="@string/rNumber"
             android:inputType="number">
@@ -42,52 +42,103 @@
 
         <Button
             android:id="@+id/button7"
+            android:layout_column="0"
+            android:layout_margin="5dp"
+            android:layout_row="1"
             android:text="@string/seven" />
 
         <Button
             android:id="@+id/button8"
+            android:layout_column="1"
+            android:layout_margin="5dp"
+            android:layout_row="1"
             android:text="@string/eight" />
 
         <Button
             android:id="@+id/button9"
+            android:layout_column="2"
+            android:layout_margin="5dp"
+            android:layout_row="1"
             android:text="@string/nine" />
 
         <Button
             android:id="@+id/button4"
+            android:layout_column="0"
+            android:layout_margin="5dp"
+            android:layout_row="2"
             android:text="@string/four" />
 
         <Button
             android:id="@+id/button5"
+            android:layout_column="1"
+            android:layout_margin="5dp"
+            android:layout_row="2"
             android:text="@string/five" />
 
         <Button
             android:id="@+id/button6"
+            android:layout_column="2"
+            android:layout_margin="5dp"
+            android:layout_row="2"
             android:text="@string/six" />
 
         <Button
             android:id="@+id/button1"
+            android:layout_column="0"
+            android:layout_margin="5dp"
+            android:layout_row="3"
             android:text="@string/one" />
 
         <Button
             android:id="@+id/button2"
+            android:layout_column="1"
+            android:layout_margin="5dp"
+            android:layout_row="3"
             android:text="@string/two" />
 
         <Button
             android:id="@+id/button3"
+            android:layout_column="2"
+            android:layout_margin="5dp"
+            android:layout_row="3"
             android:text="@string/three" />
 
         <Button
             android:id="@+id/buttonBack"
+            android:layout_column="0"
+            android:layout_margin="5dp"
+            android:layout_row="4"
             android:text="@string/back" />
 
         <Button
             android:id="@+id/button0"
+            android:layout_column="1"
+            android:layout_margin="5dp"
+            android:layout_row="4"
             android:text="@string/zero" />
 
         <Button
             android:id="@+id/buttonEnter"
+            android:layout_column="2"
+            android:layout_margin="5dp"
+            android:layout_row="4"
             android:text="@string/enter" />
 
     </GridLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:id="@+id/ButtonStart"
+            android:layout_margin="5dp"
+            android:textSize="20sp"
+            android:text="@string/start"/>
+
+    </LinearLayout>
 
 </RelativeLayout>
