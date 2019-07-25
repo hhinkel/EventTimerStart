@@ -137,6 +137,8 @@
             android:id="@+id/ButtonStart"
             android:layout_margin="5dp"
             android:textSize="20sp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
             android:text="@string/start"/>
 
     </LinearLayout>
