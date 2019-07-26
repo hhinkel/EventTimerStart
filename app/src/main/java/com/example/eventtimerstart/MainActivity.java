@@ -9,7 +9,7 @@ import android.widget.EditText;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     //Global Variables
-    Button btn[] = new Button[12];
+    Button[] btn = new Button[12];
     EditText userInput;
 
     @Override
@@ -18,18 +18,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         //Register the buttons
-        btn[0] = (Button) findViewById(R.id.button0);
-        btn[1] = (Button) findViewById(R.id.button1);
-        btn[2] = (Button) findViewById(R.id.button2);
-        btn[3] = (Button) findViewById(R.id.button3);
-        btn[4] = (Button) findViewById(R.id.button4);
-        btn[5] = (Button) findViewById(R.id.button5);
-        btn[6] = (Button) findViewById(R.id.button6);
-        btn[7] = (Button) findViewById(R.id.button7);
-        btn[8] = (Button) findViewById(R.id.button8);
-        btn[9] = (Button) findViewById(R.id.button9);
-        btn[10] = (Button) findViewById(R.id.buttonBack);
-        btn[11] = (Button) findViewById(R.id.buttonEnter);
+        btn[0] = findViewById(R.id.button0);
+        btn[1] = findViewById(R.id.button1);
+        btn[2] = findViewById(R.id.button2);
+        btn[3] = findViewById(R.id.button3);
+        btn[4] = findViewById(R.id.button4);
+        btn[5] = findViewById(R.id.button5);
+        btn[6] = findViewById(R.id.button6);
+        btn[7] = findViewById(R.id.button7);
+        btn[8] = findViewById(R.id.button8);
+        btn[9] = findViewById(R.id.button9);
+        btn[10] = findViewById(R.id.buttonBack);
+        btn[11] = findViewById(R.id.buttonEnter);
 
         //Setup on click listener
         for(int i = 0; i < 12; i++){
@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 addToArray("9");
                 break;
             case R.id.buttonEnter:
+                enterNumber(userInput);
                 break;
             case R.id.buttonBack:
                 goBackAChar(userInput);
@@ -82,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void addToArray(String number) {
-        userInput = (EditText) findViewById(R.id.numberEntered);
+        userInput = findViewById(R.id.numberEntered);
         userInput.append(number);
     }
 
@@ -96,5 +97,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             input.setSelection(input.getText().length());
             userInput = input;
         }
+    }
+
+    public void enterNumber(EditText input){
+        //TODO: get time
+
+        //TODO: parse time with number
+        //TODO: Send Data to file
+        //TODO: Encrypt data
+        //TODO: Send data over wifi to server
     }
 }
