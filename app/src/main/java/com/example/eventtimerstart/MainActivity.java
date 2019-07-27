@@ -1,10 +1,15 @@
 package com.example.eventtimerstart;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -72,13 +77,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 addToArray("9");
                 break;
             case R.id.buttonEnter:
+            case R.id.buttonStart:
                 enterNumber(userInput);
                 break;
             case R.id.buttonBack:
                 goBackAChar(userInput);
                 break;
-
-
         }
     }
 
@@ -100,11 +104,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void enterNumber(EditText input){
-        //TODO: get time
-
+        Calendar now = Calendar.getInstance();
+        long startTime = now.getTimeInMillis();
+        showTimeNumber(input, startTime);
+        //TODO: Get rider number
         //TODO: parse time with number
         //TODO: Send Data to file
         //TODO: Encrypt data
         //TODO: Send data over wifi to server
+    }
+
+    public void showTimeNumber(EditText input, long startTime){
+        Context context =getApplicationContext();
+        CharSequence text = "Rider: " + input + " Start Time: " + startTime;
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast =Toast.makeText(context, text, duration);
+        toast.show();
     }
 }
