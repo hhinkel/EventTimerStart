@@ -11,7 +11,7 @@
     <string name="three">3</string>
     <string name="back">Back</string>
     <string name="zero">0</string>
-    <string name="enter">Enter</string>
+    <string name="clear">Clear</string>
     <string name="rNumber">Rider Number</string>
     <string name="start">Start</string>
 </resources>

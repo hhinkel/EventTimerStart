@@ -9,12 +9,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
+import com.example.eventtimerstart.Rider;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     //Global Variables
-    Button[] btn = new Button[12];
+    Button[] btn = new Button[13];
     EditText userInput;
 
     @Override
@@ -34,10 +39,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn[8] = findViewById(R.id.button8);
         btn[9] = findViewById(R.id.button9);
         btn[10] = findViewById(R.id.buttonBack);
-        btn[11] = findViewById(R.id.buttonEnter);
+        btn[11] = findViewById(R.id.buttonClear);
+        btn[12] = findViewById(R.id.buttonStart);
 
         //Setup on click listener
-        for(int i = 0; i < 12; i++){
+        for(int i = 0; i < 13; i++){
             btn[i].setOnClickListener(this);
         }
     }
@@ -76,9 +82,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.button9:
                 addToArray("9");
                 break;
-            case R.id.buttonEnter:
+            case R.id.buttonClear:
+                clearNumber(userInput);
+                break;
             case R.id.buttonStart:
                 enterNumber(userInput);
+                clearNumber(userInput);
                 break;
             case R.id.buttonBack:
                 goBackAChar(userInput);
@@ -89,6 +98,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void addToArray(String number) {
         userInput = findViewById(R.id.numberEntered);
         userInput.append(number);
+    }
+
+    public void clearNumber(EditText input){
+        int sLen = input.length();
+
+        if(sLen > 0) {
+          String selection = input.getText().toString();
+          String result = input.getText().toString().replace(selection, "");
+          input.setText(result);
+          input.setSelection(input.getText().length());
+          userInput = input;
+        }
     }
 
     public void goBackAChar(EditText input) {
@@ -106,19 +127,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void enterNumber(EditText input){
         Calendar now = Calendar.getInstance();
         long startTime = now.getTimeInMillis();
-        showTimeNumber(input, startTime);
-        //TODO: Get rider number
-        //TODO: parse time with number
+        if(input.length() > 0) {
+            showTimeNumber(input.getText().toString(), now);
+            Rider rider = saveRiderData(input.getText().toString(), startTime);
+        } else {
+            numberError();
+        }
         //TODO: Send Data to file
         //TODO: Encrypt data
         //TODO: Send data over wifi to server
     }
 
-    public void showTimeNumber(EditText input, long startTime){
-        Context context =getApplicationContext();
-        CharSequence text = "Rider: " + input + " Start Time: " + startTime;
+    public void showTimeNumber(String number, Calendar now){
+        Context context = getApplicationContext();
+        SimpleDateFormat format = new SimpleDateFormat("hh:mm:ss:SS", Locale.getDefault());
+        Date startTime = now.getTime();
+        CharSequence text = "Rider: " + number + " Start Time: " + format.format(startTime);
+        int duration = Toast.LENGTH_LONG;
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.show();
+    }
+
+    public Rider saveRiderData (String number, long startTime){
+        int num = Integer.parseInt(number);
+        return new Rider(num, startTime, 0);
+    }
+
+    public void numberError(){
+        // this does not work I am going to have to do this another way.
+        // pop up a window to enter a rider number using the internal number pad
+        Context context = getApplicationContext();
+        CharSequence text = "Please enter a rider number";
         int duration = Toast.LENGTH_SHORT;
-        Toast toast =Toast.makeText(context, text, duration);
+        Toast toast = Toast.makeText(context, text, duration);
         toast.show();
     }
 }
