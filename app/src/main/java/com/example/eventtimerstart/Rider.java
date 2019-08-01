@@ -1,11 +1,11 @@
 package com.example.eventtimerstart;
 
-public class Rider {
-    int riderNumber;
-    long startTime;
-    long finishTime;
+public final class Rider {
+    private int riderNumber;
+    private long startTime;
+    private long finishTime;
 
-    public Rider(int riderNumber, long startTime, long finishTime) {
+    private Rider(int riderNumber, long startTime, long finishTime) {
         this.riderNumber = riderNumber;
         this.startTime = startTime;
         this.finishTime = finishTime;
