@@ -5,7 +5,7 @@ public final class Rider {
     private long startTime;
     private long finishTime;
 
-    private Rider(int riderNumber, long startTime, long finishTime) {
+    Rider(int riderNumber, long startTime, long finishTime) {
         this.riderNumber = riderNumber;
         this.startTime = startTime;
         this.finishTime = finishTime;
