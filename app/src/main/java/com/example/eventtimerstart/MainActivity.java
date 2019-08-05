@@ -3,11 +3,13 @@ package com.example.eventtimerstart;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.ContentValues;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+import android.database.sqlite.SQLiteDatabase;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -130,9 +132,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(input.length() > 0) {
             showTimeNumber(input.getText().toString(), now);
             Rider rider = saveRiderData(input.getText().toString(), startTime);
+            insertRider(rider);
         } else {
             numberError();
         }
+
         //TODO: Send Data to file
         //TODO: Encrypt data
         //TODO: Send data over wifi to server
@@ -151,6 +155,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public Rider saveRiderData (String number, long startTime){
         int num = Integer.parseInt(number);
         return new Rider(num, startTime, 0);
+    }
+
+    private void insertRider(Rider rider){
+
+        RiderDbHelper mDbHelper = new RiderDbHelper(this);
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(RiderContract.RiderEntry.COLUMN_RIDER_NUM, rider.getRiderNumber());
+        values.put(RiderContract.RiderEntry.COLUMN_RIDER_START, rider.getStartTime());
+        values.put(RiderContract.RiderEntry.COLUMN_RIDER_FINISH, 0);
+
+        long newRowId = db.insert(RiderContract.RiderEntry.TABLE_NAME, null, values);
+        if(newRowId == -1) {
+            Toast.makeText(this, "Error Saving Rider Data", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void numberError(){
