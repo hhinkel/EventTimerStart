@@ -18,6 +18,11 @@ import java.util.Locale;
 
 import com.example.eventtimerstart.Rider;
 
+//TODO: Create Menu
+//TODO: Add list function to the menu
+//TODO: Add edit function to menu (with password?)
+//TODO: Create Finish program
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     //Global Variables
@@ -133,13 +138,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             showTimeNumber(input.getText().toString(), now);
             Rider rider = saveRiderData(input.getText().toString(), startTime);
             insertRider(rider);
+            //TODO: Encrypt data
+            //TODO: Send data over wifi to server
         } else {
             numberError();
         }
-
-        //TODO: Send Data to file
-        //TODO: Encrypt data
-        //TODO: Send data over wifi to server
     }
 
     public void showTimeNumber(String number, Calendar now){
