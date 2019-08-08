@@ -2,9 +2,11 @@
 
 buildscript {
     repositories {
+        maven {
+            url "https://repo.eclipse.org/content/repositories/paho-snapshots/"
+        }
         google()
         jcenter()
-        
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.4.2'
