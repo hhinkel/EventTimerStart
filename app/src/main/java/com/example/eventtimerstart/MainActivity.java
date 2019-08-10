@@ -18,6 +18,8 @@ import java.util.Locale;
 
 import com.example.eventtimerstart.Rider;
 
+import org.eclipse.paho.android.service.MqttAndroidClient;
+
 //TODO: Create Menu
 //TODO: Add list function to the menu
 //TODO: Add edit function to menu (with password?)
@@ -28,6 +30,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //Global Variables
     Button[] btn = new Button[13];
     EditText userInput;
+
+    Context context = getApplicationContext();
+    MqttHelper mqttHelper;
+    MqttAndroidClient client;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -135,11 +142,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Calendar now = Calendar.getInstance();
         long startTime = now.getTimeInMillis();
         if(input.length() > 0) {
+
             showTimeNumber(input.getText().toString(), now);
             Rider rider = saveRiderData(input.getText().toString(), startTime);
             insertRider(rider);
             //TODO: Encrypt data
             //TODO: Send data over wifi to server
+            String msg = createMessageString(rider);
+            mqttHelper.publishMessage(client, msg, 1, "start");
         } else {
             numberError();
         }
@@ -184,5 +194,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int duration = Toast.LENGTH_SHORT;
         Toast toast = Toast.makeText(context, text, duration);
         toast.show();
+    }
+
+    private String createMessageString (Rider rider) {
+        return rider.toString();
     }
 }

@@ -3,6 +3,8 @@ package com.example.eventtimerstart;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -12,6 +14,9 @@ import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
+
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 
 public class MqttHelper {
 
@@ -60,8 +65,8 @@ public class MqttHelper {
         MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
         mqttConnectOptions.setAutomaticReconnect(true);
         mqttConnectOptions.setCleanSession(false);
-        //mqttConnectOptions.setUserName(username);
-        //mqttConnectOptions.setPassword(password.toCharArray());
+        mqttConnectOptions.setUserName(username);
+        mqttConnectOptions.setPassword(key.toCharArray());
 
         try {
             mqttAndroidClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
@@ -103,6 +108,16 @@ public class MqttHelper {
             System.err.println("Exception while subscribing");
             ex.printStackTrace();
         }
+    }
+
+    public void publishMessage(@NonNull MqttAndroidClient client, @NonNull String msg, int qos, @NonNull String topic) throws MqttException, UnsupportedEncodingException {
+        byte[] encodedPayload = new byte[0];
+        encodedPayload = msg.getBytes( "UTF-8");
+        MqttMessage message = new MqttMessage(encodedPayload);
+        message.setId(5866);
+        message.setRetained(true);
+        message.setQos(qos);
+        mqttAndroidClient.publish(topic, message);
     }
 }
 
