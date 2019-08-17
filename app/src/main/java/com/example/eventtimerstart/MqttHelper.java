@@ -27,8 +27,8 @@ public class MqttHelper {
     final String clientId = "1148847";
     final String subscriptionTopic = "startTime/+";
 
-    final String username = "ad_astra";
-    final String key = "0a8f97b274ad4cd785e8ff3350838110";
+    final private String username = "ad_astra";
+    final private String key = "";
 
     public MqttHelper(Context context) {
         mqttAndroidClient = new MqttAndroidClient(context, serverUri, clientId);
@@ -112,12 +112,16 @@ public class MqttHelper {
 
     public void publishMessage(@NonNull MqttAndroidClient client, @NonNull String msg, int qos, @NonNull String topic) throws MqttException, UnsupportedEncodingException {
         byte[] encodedPayload = new byte[0];
-        encodedPayload = msg.getBytes( "UTF-8");
-        MqttMessage message = new MqttMessage(encodedPayload);
-        message.setId(5866);
-        message.setRetained(true);
-        message.setQos(qos);
-        mqttAndroidClient.publish(topic, message);
+        try {
+            encodedPayload = msg.getBytes("UTF-8");
+            MqttMessage message = new MqttMessage(encodedPayload);
+            //message.setId(5866);
+            //message.setRetained(true);
+            //message.setQos(qos);
+            client.publish(topic, message);
+        } catch (UnsupportedEncodingException | MqttException e) {
+            e.printStackTrace();
+        }
     }
 }
 
