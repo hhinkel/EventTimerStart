@@ -28,7 +28,7 @@ public class MqttHelper {
     final String subscriptionTopic = "startTime/start";
 
     final private String username = "yrzlekwy";
-    final private String key = "pBVkVlJy413x";
+    final private String key = "";
 
     public MqttHelper(Context context) {
         mqttAndroidClient = new MqttAndroidClient(context, serverUri, clientId);
