@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -19,6 +20,7 @@ import java.util.Locale;
 import com.example.eventtimerstart.Rider;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
+import org.eclipse.paho.client.mqttv3.MqttException;
 
 //TODO: Create Menu
 //TODO: Add list function to the menu
@@ -31,9 +33,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button[] btn = new Button[13];
     EditText userInput;
 
-    Context context = getApplicationContext();
-    MqttHelper mqttHelper;
-    MqttAndroidClient client;
+//    Context context = getApplicationContext();
+//    MqttHelper mqttHelper;
+//    MqttAndroidClient client;
 
 
     @Override
@@ -100,7 +102,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 clearNumber(userInput);
                 break;
             case R.id.buttonStart:
-                enterNumber(userInput);
+                try {
+                    enterNumber(userInput);
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                }
                 clearNumber(userInput);
                 break;
             case R.id.buttonBack:
@@ -138,9 +146,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void enterNumber(EditText input){
+    public void enterNumber(EditText input) throws MqttException, UnsupportedEncodingException {
         Calendar now = Calendar.getInstance();
         long startTime = now.getTimeInMillis();
+        Context context = getApplicationContext();
         if(input.length() > 0) {
 
             showTimeNumber(input.getText().toString(), now);
@@ -148,8 +157,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             insertRider(rider);
             //TODO: Encrypt data
             //TODO: Send data over wifi to server
+            MqttHelper mqttHelper = new MqttHelper(context);
             String msg = createMessageString(rider);
-            mqttHelper.publishMessage(client, msg, 1, "start");
+            try {
+                mqttHelper.publishMessage(msg);
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            } catch (MqttException e) {
+                e.printStackTrace();
+            }
+
         } else {
             numberError();
         }

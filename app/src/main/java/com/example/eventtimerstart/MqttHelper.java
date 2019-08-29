@@ -22,13 +22,13 @@ public class MqttHelper {
 
     public MqttAndroidClient mqttAndroidClient;
 
-    final String serverUri = "tcp://ad_astra/feeds.event-timer:8885";
+    final String serverUri = "tcp://soldier.cloudmqtt.com:16424";
 
-    final String clientId = "1148847";
-    final String subscriptionTopic = "startTime/+";
+    final String clientId = "Test";
+    final String subscriptionTopic = "startTime/start";
 
-    final private String username = "ad_astra";
-    final private String key = "";
+    final private String username = "yrzlekwy";
+    final private String key = "pBVkVlJy413x";
 
     public MqttHelper(Context context) {
         mqttAndroidClient = new MqttAndroidClient(context, serverUri, clientId);
@@ -72,6 +72,7 @@ public class MqttHelper {
             mqttAndroidClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
+                    Boolean connect  = mqttAndroidClient.isConnected();
                     DisconnectedBufferOptions disconnectedBufferOptions = new DisconnectedBufferOptions();
                     disconnectedBufferOptions.setBufferEnabled(true);
                     disconnectedBufferOptions.setBufferSize(100);
@@ -110,18 +111,9 @@ public class MqttHelper {
         }
     }
 
-    public void publishMessage(@NonNull MqttAndroidClient client, @NonNull String msg, int qos, @NonNull String topic) throws MqttException, UnsupportedEncodingException {
-        byte[] encodedPayload = new byte[0];
-        try {
-            encodedPayload = msg.getBytes("UTF-8");
-            MqttMessage message = new MqttMessage(encodedPayload);
-            //message.setId(5866);
-            //message.setRetained(true);
-            //message.setQos(qos);
-            client.publish(topic, message);
-        } catch (UnsupportedEncodingException | MqttException e) {
-            e.printStackTrace();
-        }
+    public void publishMessage(String msg) throws MqttException, UnsupportedEncodingException {
+        Boolean connected = mqttAndroidClient.isConnected();
+        mqttAndroidClient.publish(subscriptionTopic, msg.getBytes(),0,false);
     }
 }
 
