@@ -159,14 +159,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //TODO: Send data over wifi to server
             MqttHelper mqttHelper = new MqttHelper(context);
             String msg = createMessageString(rider);
-            try {
-                mqttHelper.publishMessage(msg);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            } catch (MqttException e) {
-                e.printStackTrace();
-            }
-
+            mqttHelper.connect(mqttHelper, msg);
         } else {
             numberError();
         }

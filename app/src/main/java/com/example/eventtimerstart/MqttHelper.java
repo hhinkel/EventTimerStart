@@ -24,7 +24,7 @@ public class MqttHelper {
 
     final String serverUri = "tcp://soldier.cloudmqtt.com:16424";
 
-    final String clientId = "Test";
+    final String clientId = "StartApp";
     final String subscriptionTopic = "startTime/start";
 
     final private String username = "yrzlekwy";
@@ -52,16 +52,14 @@ public class MqttHelper {
             public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken){
 
            }
-
         });
-        connect();
     }
 
     public void setCallBack(MqttCallbackExtended callback) {
         mqttAndroidClient.setCallback(callback);
     }
 
-    private void connect(){
+    void connect(MqttHelper helper, final String msg){
         MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
         mqttConnectOptions.setAutomaticReconnect(true);
         mqttConnectOptions.setCleanSession(false);
@@ -73,13 +71,13 @@ public class MqttHelper {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     Boolean connect  = mqttAndroidClient.isConnected();
-                    DisconnectedBufferOptions disconnectedBufferOptions = new DisconnectedBufferOptions();
-                    disconnectedBufferOptions.setBufferEnabled(true);
-                    disconnectedBufferOptions.setBufferSize(100);
-                    disconnectedBufferOptions.setPersistBuffer(false);
-                    disconnectedBufferOptions.setDeleteOldestMessages(false);
-                    mqttAndroidClient.setBufferOpts(disconnectedBufferOptions);
-                    subscribeToTopic();
+                    try {
+                        publishMessage(msg);
+                    } catch (MqttException e) {
+                        e.printStackTrace();
+                    }
+
+                    Log.w("Mqtt", "Successfully connected to: " + serverUri + "Connected? " + connect);
                 }
 
                 @Override
@@ -111,9 +109,12 @@ public class MqttHelper {
         }
     }
 
-    public void publishMessage(String msg) throws MqttException, UnsupportedEncodingException {
-        Boolean connected = mqttAndroidClient.isConnected();
-        mqttAndroidClient.publish(subscriptionTopic, msg.getBytes(),0,false);
+    private void publishMessage(String msg) throws MqttException {
+        if (mqttAndroidClient.isConnected()) {
+            MqttMessage message = new MqttMessage(msg.getBytes());
+            mqttAndroidClient.publish(subscriptionTopic, message);
+        } else
+            Log.w("Mqtt","Publish Failed!");
     }
 }
 
