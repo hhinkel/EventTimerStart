@@ -29,6 +29,10 @@
             android:name=".EditorActivity"
             android:parentActivityName=".CatalogActivity" >
         </activity>
+        <provider
+            android:authorities="com.example.eventtimerstart"
+            android:name="RiderContract"
+            android:exported="false" />
         <service android:name="org.eclipse.paho.android.service.MqttService" />
     </application>
 </manifest>
