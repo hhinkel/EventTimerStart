@@ -23,7 +23,8 @@ public class RiderDbHelper extends  SQLiteOpenHelper {
         String SQL_CREATE_RIDER_TABLE =  "CREATE TABLE " + RiderEntry.TABLE_NAME + " ("
                 + RiderEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + RiderEntry.COLUMN_RIDER_NUM + " INTEGER NOT NULL, "
-                + RiderEntry.COLUMN_RIDER_START + " INTEGER NOT NULL, "
+                + RiderEntry.COLUMN_FENCE_NUM + "INTEGER NOT NULL, "
+                + RiderEntry.COLUMN_RIDER_START + " INTEGER DEFAULT 0, "
                 + RiderEntry.COLUMN_RIDER_FINISH + " INTEGER DEFAULT 0);";
 
         // Execute the SQL statement

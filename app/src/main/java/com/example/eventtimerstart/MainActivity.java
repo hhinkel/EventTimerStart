@@ -4,7 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.ContentValues;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,6 +26,7 @@ import com.example.eventtimerstart.Rider;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import com.example.eventtimerstart.RiderContract.RiderEntry;
 
 //TODO: Create Menu
 //TODO: Add list function to the menu
@@ -177,23 +183,28 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public Rider saveRiderData (String number, long startTime){
         int num = Integer.parseInt(number);
-        return new Rider(num, startTime, 0);
+        return new Rider(num, 0, startTime, 0);
     }
 
     private void insertRider(Rider rider){
 
-        RiderDbHelper mDbHelper = new RiderDbHelper(this);
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        //RiderDbHelper mDbHelper = new RiderDbHelper(this);
+        //SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(RiderContract.RiderEntry.COLUMN_RIDER_NUM, rider.getRiderNumber());
+        values.put(RiderContract.RiderEntry.COLUMN_FENCE_NUM, 0);
         values.put(RiderContract.RiderEntry.COLUMN_RIDER_START, rider.getStartTime());
         values.put(RiderContract.RiderEntry.COLUMN_RIDER_FINISH, 0);
 
-        long newRowId = db.insert(RiderContract.RiderEntry.TABLE_NAME, null, values);
-        if(newRowId == -1) {
-            Toast.makeText(this, "Error Saving Rider Data", Toast.LENGTH_SHORT).show();
-        }
+        //long newRowId = db.insert(RiderContract.RiderEntry.TABLE_NAME, null, values);
+        //if(newRowId == -1) {
+        //    Toast.makeText(this, "Error Saving Rider Data", Toast.LENGTH_SHORT).show();
+        //}
+
+        Uri newUri = getContentResolver().insert(RiderContract.RiderEntry.CONTENT_URI,values);
+        Log.v("MainActivity", newUri + " value of newUri");
+    //    Toast.makeText(this,"Value of newUri: " + newUri, Toast.LENGTH_SHORT).show();
     }
 
     public void numberError(){
@@ -208,5 +219,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private String createMessageString (Rider rider) {
         return rider.toString();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    private void deleteAllRides() {
+        int rowsDeleted = getContentResolver().delete(RiderContract.RiderEntry.CONTENT_URI, null, null);
+        Log.v("CatalogActivity", rowsDeleted + " rows deleted from rider database");
+    }
+
+    private void uninstallApp() {}
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_view_all_enteries:
+                Intent catalogIntent = new Intent(this, CatalogActivity.class);
+                startActivity(catalogIntent);
+                return true;
+            case R.id.action_delete_all_entries:
+                deleteAllRides();
+                return true;
+            case R.id.action_uninstall:
+                uninstallApp();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
