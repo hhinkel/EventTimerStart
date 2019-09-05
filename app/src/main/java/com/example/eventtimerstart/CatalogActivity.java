@@ -78,10 +78,10 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_view_all_enteries:
-                return true;
-            case R.id.action_delete_all_entries:
+            case R.id.edit_delete_all_entries:
                 deleteAllRides();
+                return true;
+            case R.id.edit_uninstall:
                 return true;
         }
         return super.onOptionsItemSelected(item);

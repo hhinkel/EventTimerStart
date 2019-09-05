@@ -28,9 +28,6 @@ import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import com.example.eventtimerstart.RiderContract.RiderEntry;
 
-//TODO: Create Menu
-//TODO: Add list function to the menu
-//TODO: Add edit function to menu (with password?)
 //TODO: Create Finish program
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -162,7 +159,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Rider rider = saveRiderData(input.getText().toString(), startTime);
             insertRider(rider);
             //TODO: Encrypt data
-            //TODO: Send data over wifi to server
             MqttHelper mqttHelper = new MqttHelper(context);
             String msg = createMessageString(rider);
             mqttHelper.connect(mqttHelper, msg);
