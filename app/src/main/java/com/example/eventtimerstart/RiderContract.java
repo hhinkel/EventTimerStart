@@ -27,7 +27,7 @@ public final class RiderContract {
 
         public static final String _ID = BaseColumns._ID;
         public static final String COLUMN_RIDER_NUM = "number";
-        public static final String COLUMN_FENCE_NUM = "fenceNum";
+        public static final String COLUMN_FENCE_NUM = "fenceNumber";
         public static final String COLUMN_RIDER_START = "start";
         public static final String COLUMN_RIDER_FINISH = "finish";
 

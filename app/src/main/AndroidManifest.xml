@@ -31,8 +31,7 @@
         </activity>
         <provider
             android:authorities="com.example.eventtimerstart"
-            android:name="RiderContract"
-            android:exported="false" />
+            android:name=".RiderProvider" />
         <service android:name="org.eclipse.paho.android.service.MqttService" />
     </application>
 </manifest>

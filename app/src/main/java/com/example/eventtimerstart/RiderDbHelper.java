@@ -11,7 +11,7 @@ public class RiderDbHelper extends  SQLiteOpenHelper {
     public static final String LOG_TAG = RiderDbHelper.class.getSimpleName();
 
     private static final String DATABASE_NAME = "rider.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 5;
 
     public RiderDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -23,8 +23,8 @@ public class RiderDbHelper extends  SQLiteOpenHelper {
         String SQL_CREATE_RIDER_TABLE =  "CREATE TABLE " + RiderEntry.TABLE_NAME + " ("
                 + RiderEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + RiderEntry.COLUMN_RIDER_NUM + " INTEGER NOT NULL, "
-                + RiderEntry.COLUMN_FENCE_NUM + "INTEGER NOT NULL, "
-                + RiderEntry.COLUMN_RIDER_START + " INTEGER DEFAULT 0, "
+                + RiderEntry.COLUMN_FENCE_NUM + " INTEGER DEFAULT 0, "
+                + RiderEntry.COLUMN_RIDER_START + " INTEGER NOT NULL, "
                 + RiderEntry.COLUMN_RIDER_FINISH + " INTEGER DEFAULT 0);";
 
         // Execute the SQL statement
@@ -36,7 +36,8 @@ public class RiderDbHelper extends  SQLiteOpenHelper {
      */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // The database is still at version 1, so there's nothing to do be done here.
+        db.execSQL("DROP TABLE IF EXISTS " + RiderEntry.TABLE_NAME);
+        onCreate(db);
     }
 
 }
