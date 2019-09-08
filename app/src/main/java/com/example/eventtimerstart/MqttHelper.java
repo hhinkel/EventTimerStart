@@ -6,7 +6,6 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
-import org.eclipse.paho.client.mqttv3.DisconnectedBufferOptions;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
@@ -20,15 +19,15 @@ import java.nio.charset.StandardCharsets;
 
 public class MqttHelper {
 
-    public MqttAndroidClient mqttAndroidClient;
+    private MqttAndroidClient mqttAndroidClient;
 
-    final String serverUri = "tcp://soldier.cloudmqtt.com:16424";
+    final private String serverUri = "tcp://soldier.cloudmqtt.com:16424";
 
-    final String clientId = "StartApp";
-    final String subscriptionTopic = "startTime/start";
+    final private String clientId = "StartApp";
+    final private String subscriptionTopic = "startTime/start";
 
     final private String username = "yrzlekwy";
-    final private String key = "pBVkVlJy413x";
+    final private String key = "";
 
     public MqttHelper(Context context) {
         mqttAndroidClient = new MqttAndroidClient(context, serverUri, clientId);
@@ -70,7 +69,7 @@ public class MqttHelper {
             mqttAndroidClient.connect(mqttConnectOptions, null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
-                    Boolean connect  = mqttAndroidClient.isConnected();
+                    boolean connect  = mqttAndroidClient.isConnected();
                     try {
                         publishMessage(msg);
                     } catch (MqttException e) {

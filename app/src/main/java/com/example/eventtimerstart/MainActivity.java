@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-import android.database.sqlite.SQLiteDatabase;
 
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
@@ -22,11 +21,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import com.example.eventtimerstart.Rider;
 
-import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
-import com.example.eventtimerstart.RiderContract.RiderEntry;
 
 //TODO: Create Finish program
 

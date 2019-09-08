@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
@@ -33,7 +34,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     private int mFenceNum;
     private long mStartTime;
     private long mFinishTime;
-    private Rider mRider;
 
     private boolean mRiderHasChanged = false;
 
@@ -56,7 +56,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         setTitle(getString(R.string.editor_activity_title_edit_rider));
         getSupportLoaderManager().initLoader(EXISTING_RIDER_LOADER, null, this);
 
-        mNumberEditText = (EditText) findViewById(R.id.edit_rider_number);
+        mNumberEditText = findViewById(R.id.edit_rider_number);
 
         mNumberEditText.setOnTouchListener(mTouchListener);
     }
@@ -90,8 +90,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         }
         Context context = getApplicationContext();
         MqttHelper mqttHelper = new MqttHelper(context);
-        mRider = new Rider(Integer.parseInt(mNumber), mFenceNum, mStartTime, mFinishTime);
-        String msg = createMessageString(mRider);
+        Rider rider = new Rider(Integer.parseInt(mNumber), mFenceNum, mStartTime, mFinishTime);
+        String msg = createMessageString(rider);
         mqttHelper.connect(mqttHelper, msg);
     }
 
@@ -161,6 +161,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         showUnsavedChangesDialog(discardButtonClickListener);
     }
 
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         String[] projection = {
@@ -179,7 +180,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
         if (cursor == null || cursor.getCount() < 1) {
             return;
         }
@@ -200,7 +201,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         mNumberEditText.setText("");
     }
 

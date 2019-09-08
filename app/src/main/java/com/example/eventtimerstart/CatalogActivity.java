@@ -37,7 +37,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         Intent intent = getIntent();
         mCurrentRiderUri = intent.getData();
 
-        ListView riderListView = (ListView) findViewById(R.id.list);
+        ListView riderListView = findViewById(R.id.list);
 
         View emptyView = findViewById(R.id.empty_view);
         riderListView.setEmptyView(emptyView);

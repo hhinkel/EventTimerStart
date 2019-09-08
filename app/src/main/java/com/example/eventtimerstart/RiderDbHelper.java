@@ -8,12 +8,10 @@ import com.example.eventtimerstart.RiderContract.RiderEntry;
 
 public class RiderDbHelper extends  SQLiteOpenHelper {
 
-    public static final String LOG_TAG = RiderDbHelper.class.getSimpleName();
-
     private static final String DATABASE_NAME = "rider.db";
     private static final int DATABASE_VERSION = 5;
 
-    public RiderDbHelper(Context context) {
+    RiderDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 

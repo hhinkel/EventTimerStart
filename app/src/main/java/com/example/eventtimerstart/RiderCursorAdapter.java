@@ -15,7 +15,7 @@ import java.util.Locale;
 
 public class RiderCursorAdapter extends CursorAdapter {
 
-    public RiderCursorAdapter(Context context, Cursor cursor) {
+    RiderCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor, 0);
     }
 
@@ -26,8 +26,8 @@ public class RiderCursorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView numberTextView = (TextView) view.findViewById(R.id.number);
-        TextView summaryTextView = (TextView) view.findViewById(R.id.summary);
+        TextView numberTextView = view.findViewById(R.id.number);
+        TextView summaryTextView = view.findViewById(R.id.summary);
 
         int numberColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_RIDER_NUM);
         int startColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_RIDER_START);
