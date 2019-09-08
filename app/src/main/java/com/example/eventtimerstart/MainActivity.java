@@ -184,23 +184,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void insertRider(Rider rider){
 
-        //RiderDbHelper mDbHelper = new RiderDbHelper(this);
-        //SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
         ContentValues values = new ContentValues();
         values.put(RiderContract.RiderEntry.COLUMN_RIDER_NUM, rider.getRiderNumber());
         values.put(RiderContract.RiderEntry.COLUMN_FENCE_NUM, 0);
         values.put(RiderContract.RiderEntry.COLUMN_RIDER_START, rider.getStartTime());
         values.put(RiderContract.RiderEntry.COLUMN_RIDER_FINISH, 0);
 
-        //long newRowId = db.insert(RiderContract.RiderEntry.TABLE_NAME, null, values);
-        //if(newRowId == -1) {
-        //    Toast.makeText(this, "Error Saving Rider Data", Toast.LENGTH_SHORT).show();
-        //}
-
         Uri newUri = getContentResolver().insert(RiderContract.RiderEntry.CONTENT_URI,values);
         Log.v("MainActivity", newUri + " value of newUri");
-    //    Toast.makeText(this,"Value of newUri: " + newUri, Toast.LENGTH_SHORT).show();
     }
 
     public void numberError(){
