@@ -27,7 +27,7 @@ import com.example.eventtimerstart.RiderContract.RiderEntry;
 
 public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int RIDER_LOADER = 0;
+    private static final int EXISTING_RIDER_LOADER = 0;
     private Uri mCurrentRiderUri;
     private EditText mNumberEditText;
     private LoaderManager.LoaderCallbacks<Cursor> mLoaderCallback;
@@ -45,20 +45,13 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_editor);
+        setContentView(R.layout.layout_item);
 
         Intent intent = getIntent();
         mCurrentRiderUri = intent.getData();
 
-        if (mCurrentRiderUri == null) {
-            setTitle(getString(R.string.editor_activity_title_new_rider));
-            invalidateOptionsMenu();
-        } else {
-            setTitle(getString(R.string.editor_activity_title_edit_rider));
-            //getLoaderManager().initLoader(RIDER_LOADER,null, this);
-            //getSupportLoaderManager().initLoader(RIDER_LOADER, null, mLoaderCallback);
-            getSupportLoaderManager().initLoader(RIDER_LOADER, null, this);
-        }
+        setTitle(getString(R.string.editor_activity_title_edit_rider));
+        getSupportLoaderManager().initLoader(EXISTING_RIDER_LOADER, null, this);
 
         mNumberEditText = (EditText) findViewById(R.id.edit_rider_number);
 
@@ -185,7 +178,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             //int startColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_RIDER_START);
             //int finishColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_RIDER_FINISH);
 
-            int number = cursor.getInt(riderColumnIndex);
+            String number = cursor.getString(riderColumnIndex);
             //int fence = cursor.getInt(fenceColumnIndex);
             //String start = cursor.getString(startColumnIndex);
             //String finish = cursor.getString(finishColumnIndex);

@@ -22,7 +22,7 @@
     <string name="category_overview">Overview</string>
     <string name="unsaved_changes_dialog_msg">You have unsaved changes</string>
     <string name="editor_activity_title_new_rider">Enter New Rider</string>
-    <string name="editor_activity_title_edit_rider">Edit New Rider</string>
+    <string name="editor_activity_title_edit_rider">Edit Rider</string>
     <string name="editor_insert_rider_failed">Insert Rider Failed</string>
     <string name="editor_insert_rider_success">Insert Rider Succeeded</string>
     <string name="editor_update_rider_failed">Update Rider Failed</string>
