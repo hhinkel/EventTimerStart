@@ -33,11 +33,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button[] btn = new Button[13];
     EditText userInput;
 
-//    Context context = getApplicationContext();
-//    MqttHelper mqttHelper;
-//    MqttAndroidClient client;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -158,7 +153,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //TODO: Encrypt data
             MqttHelper mqttHelper = new MqttHelper(context);
             String msg = createMessageString(rider);
-            mqttHelper.connect(mqttHelper, msg);
+            mqttHelper.connect(msg);
         } else {
             numberError();
         }

@@ -92,7 +92,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         MqttHelper mqttHelper = new MqttHelper(context);
         Rider rider = new Rider(Integer.parseInt(mNumber), mFenceNum, mStartTime, mFinishTime);
         String msg = createMessageString(rider);
-        mqttHelper.connect(mqttHelper, msg);
+        mqttHelper.connect(msg);
     }
 
     private String createMessageString(Rider rider) {
