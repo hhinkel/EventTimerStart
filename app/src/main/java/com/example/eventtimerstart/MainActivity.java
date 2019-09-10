@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+//import java.util.Calendar;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -151,7 +152,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         Context context = getApplicationContext();
         if(input.length() > 0) {
 
-            showTimeNumber(input.getText().toString(), now);
+            showStartTimeToast(context, input.getText().toString(), startTime);
             Rider rider = saveRiderData(input.getText().toString(), startTime);
             insertRider(rider);
             //TODO: Encrypt data
@@ -163,14 +164,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    public void showTimeNumber(String number, Calendar now){
-        Context context = getApplicationContext();
+    public void showStartTimeToast(Context context, String number, long startTime){
         SimpleDateFormat format = new SimpleDateFormat("hh:mm:ss:SS", Locale.getDefault());
-        Date startTime = now.getTime();
         CharSequence text = "Rider: " + number + " Start Time: " + format.format(startTime);
-        int duration = Toast.LENGTH_LONG;
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
+        Toast.makeText(context, text, Toast.LENGTH_LONG).show();
     }
 
     public Rider saveRiderData (String number, long startTime){
@@ -201,7 +198,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private String createMessageString (Rider rider) {
-        return rider.toString();
+
+        return rider.getRiderNumber() + "," + rider.getFenceNumber() + "," + rider.getStartTime() + "," + rider.getFinishTime();
     }
 
     @Override
