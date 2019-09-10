@@ -57,7 +57,7 @@ public class MqttHelper {
 
         MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
         mqttConnectOptions.setAutomaticReconnect(true);
-        mqttConnectOptions.setCleanSession(true);
+        mqttConnectOptions.setCleanSession(false);
         mqttConnectOptions.setUserName(username);
         mqttConnectOptions.setPassword(key.toCharArray());
 
@@ -109,6 +109,7 @@ public class MqttHelper {
             MqttMessage message = new MqttMessage(msg.getBytes());
             message.setQos(1);
             mqttAndroidClient.publish(subscriptionTopic, message);
+            mqttAndroidClient.disconnect();
         } else
             Log.w("Mqtt","Publish Failed!");
     }
