@@ -3,8 +3,6 @@ package com.example.eventtimerstart;
 import android.content.Context;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
@@ -13,9 +11,6 @@ import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
-
-import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 
 public class MqttHelper {
 
@@ -62,7 +57,7 @@ public class MqttHelper {
 
         MqttConnectOptions mqttConnectOptions = new MqttConnectOptions();
         mqttConnectOptions.setAutomaticReconnect(true);
-        mqttConnectOptions.setCleanSession(false);
+        mqttConnectOptions.setCleanSession(true);
         mqttConnectOptions.setUserName(username);
         mqttConnectOptions.setPassword(key.toCharArray());
 
@@ -92,7 +87,7 @@ public class MqttHelper {
 
     private void subscribeToTopic() {
         try{
-            mqttAndroidClient.subscribe(subscriptionTopic, 0, null, new IMqttActionListener() {
+            mqttAndroidClient.subscribe(subscriptionTopic, 2, null, new IMqttActionListener() {
                 @Override
                 public void onSuccess(IMqttToken asyncActionToken) {
                     Log.w("Mqtt", "Subscribed!");
@@ -112,6 +107,7 @@ public class MqttHelper {
     private void publishMessage(String msg) throws MqttException {
         if (mqttAndroidClient.isConnected()) {
             MqttMessage message = new MqttMessage(msg.getBytes());
+            message.setQos(1);
             mqttAndroidClient.publish(subscriptionTopic, message);
         } else
             Log.w("Mqtt","Publish Failed!");
