@@ -28,9 +28,6 @@ import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import com.example.eventtimerstart.RiderContract.RiderEntry;
 
-//TODO: Create Menu
-//TODO: Add list function to the menu
-//TODO: Add edit function to menu (with password?)
 //TODO: Create Finish program
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -38,10 +35,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     //Global Variables
     Button[] btn = new Button[13];
     EditText userInput;
-
-//    Context context = getApplicationContext();
-//    MqttHelper mqttHelper;
-//    MqttAndroidClient client;
 
 
     @Override
@@ -162,7 +155,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Rider rider = saveRiderData(input.getText().toString(), startTime);
             insertRider(rider);
             //TODO: Encrypt data
-            //TODO: Send data over wifi to server
             MqttHelper mqttHelper = new MqttHelper(context);
             String msg = createMessageString(rider);
             mqttHelper.connect(mqttHelper, msg);
@@ -197,14 +189,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         values.put(RiderContract.RiderEntry.COLUMN_RIDER_START, rider.getStartTime());
         values.put(RiderContract.RiderEntry.COLUMN_RIDER_FINISH, 0);
 
-        //long newRowId = db.insert(RiderContract.RiderEntry.TABLE_NAME, null, values);
-        //if(newRowId == -1) {
-        //    Toast.makeText(this, "Error Saving Rider Data", Toast.LENGTH_SHORT).show();
-        //}
-
         Uri newUri = getContentResolver().insert(RiderContract.RiderEntry.CONTENT_URI,values);
         Log.v("MainActivity", newUri + " value of newUri");
-    //    Toast.makeText(this,"Value of newUri: " + newUri, Toast.LENGTH_SHORT).show();
     }
 
     public void numberError(){
