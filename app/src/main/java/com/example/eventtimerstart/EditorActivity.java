@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.NavUtils;
@@ -22,15 +23,17 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
 
-import com.example.eventtimerstart.RiderContract.RiderEntry;
 
 
 public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int RIDER_LOADER = 0;
+    private static final int EXISTING_RIDER_LOADER = 0;
     private Uri mCurrentRiderUri;
     private EditText mNumberEditText;
-    private LoaderManager.LoaderCallbacks<Cursor> mLoaderCallback;
+    private String mNumber;
+    private int mFenceNum;
+    private long mStartTime;
+    private long mFinishTime;
 
     private boolean mRiderHasChanged = false;
 
@@ -45,36 +48,29 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_editor);
+        setContentView(R.layout.layout_item);
 
         Intent intent = getIntent();
         mCurrentRiderUri = intent.getData();
 
-        if (mCurrentRiderUri == null) {
-            setTitle(getString(R.string.editor_activity_title_new_rider));
-            invalidateOptionsMenu();
-        } else {
-            setTitle(getString(R.string.editor_activity_title_edit_rider));
-            //getLoaderManager().initLoader(RIDER_LOADER,null, this);
-            //getSupportLoaderManager().initLoader(RIDER_LOADER, null, mLoaderCallback);
-            getSupportLoaderManager().initLoader(RIDER_LOADER, null, this);
-        }
+        setTitle(getString(R.string.editor_activity_title_edit_rider));
+        getSupportLoaderManager().initLoader(EXISTING_RIDER_LOADER, null, this);
 
-        mNumberEditText = (EditText) findViewById(R.id.edit_rider_number);
+        mNumberEditText = findViewById(R.id.edit_rider_number);
 
         mNumberEditText.setOnTouchListener(mTouchListener);
     }
 
     private void saveRider() {
-        String numberString = mNumberEditText.getText().toString().trim();
+        mNumber = mNumberEditText.getText().toString().trim();
 
         if (mCurrentRiderUri == null &&
-                TextUtils.isEmpty(numberString)) {
+                TextUtils.isEmpty(mNumber)) {
             return;
         }
 
         ContentValues values = new ContentValues();
-        values.put(RiderContract.RiderEntry.COLUMN_RIDER_NUM, numberString);
+        values.put(RiderContract.RiderEntry.COLUMN_RIDER_NUM, mNumber);
 
         if (mCurrentRiderUri == null) {
             Uri newUri = getContentResolver().insert(RiderContract.RiderEntry.CONTENT_URI, values);
@@ -92,6 +88,15 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 Toast.makeText(this, getString(R.string.editor_update_rider_success), Toast.LENGTH_SHORT).show();
             }
         }
+        Context context = getApplicationContext();
+        MqttHelper mqttHelper = new MqttHelper(context);
+        Rider rider = new Rider(Integer.parseInt(mNumber), mFenceNum, mStartTime, mFinishTime);
+        String msg = createMessageString(rider);
+        mqttHelper.connect(msg);
+    }
+
+    private String createMessageString(Rider rider) {
+        return rider.toString();
     }
 
     @Override
@@ -156,14 +161,15 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         showUnsavedChangesDialog(discardButtonClickListener);
     }
 
+    @NonNull
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
         String[] projection = {
                 RiderContract.RiderEntry._ID,
-                RiderContract.RiderEntry.COLUMN_RIDER_NUM};
-                //RiderContract.RiderEntry.COLUMN_FENCE_NUM,
-                //RiderContract.RiderEntry.COLUMN_RIDER_START,
-                //RiderContract.RiderEntry.COLUMN_RIDER_FINISH };
+                RiderContract.RiderEntry.COLUMN_RIDER_NUM,
+                RiderContract.RiderEntry.COLUMN_FENCE_NUM,
+                RiderContract.RiderEntry.COLUMN_RIDER_START,
+                RiderContract.RiderEntry.COLUMN_RIDER_FINISH };
 
         return new CursorLoader(this,
                 mCurrentRiderUri,
@@ -174,28 +180,28 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
         if (cursor == null || cursor.getCount() < 1) {
             return;
         }
 
         if (cursor.moveToFirst()) {
             int riderColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_RIDER_NUM);
-            //int fenceColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_FENCE_NUM);
-            //int startColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_RIDER_START);
-            //int finishColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_RIDER_FINISH);
+            int fenceColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_FENCE_NUM);
+            int startColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_RIDER_START);
+            int finishColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_RIDER_FINISH);
 
-            int number = cursor.getInt(riderColumnIndex);
-            //int fence = cursor.getInt(fenceColumnIndex);
-            //String start = cursor.getString(startColumnIndex);
-            //String finish = cursor.getString(finishColumnIndex);
+            mNumber = cursor.getString(riderColumnIndex);
+            mFenceNum = cursor.getInt(fenceColumnIndex);
+            mStartTime = cursor.getLong(startColumnIndex);
+            mFinishTime = cursor.getLong(finishColumnIndex);
 
-            mNumberEditText.setText(number);
+            mNumberEditText.setText(mNumber);
         }
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
+    public void onLoaderReset(@NonNull Loader<Cursor> loader) {
         mNumberEditText.setText("");
     }
 

@@ -9,6 +9,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
 import java.security.Provider;
 
 public class RiderProvider extends ContentProvider {
@@ -33,7 +35,7 @@ public class RiderProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteDatabase database = mDbHelper.getReadableDatabase();
         Cursor cursor;
         int match = sUriMatcher.match(uri);
@@ -91,7 +93,7 @@ public class RiderProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues contentValues, String selection,
+    public int update(@NonNull Uri uri, ContentValues contentValues, String selection,
                       String[] selectionArgs) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
@@ -134,8 +136,8 @@ public class RiderProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
-        // Get writeable database
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
+        // Get writable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
         // Track the number of rows that were deleted
@@ -168,7 +170,7 @@ public class RiderProvider extends ContentProvider {
     }
 
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case RIDERS:

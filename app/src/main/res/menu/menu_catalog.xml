@@ -6,13 +6,13 @@
     tools:context=".CatalogActivity">
 
     <item
-        android:id="@+id/action_view_all_enteries"
-        android:title="@string/action_view_all_enteries"
+        android:id="@+id/edit_delete_all_entries"
+        android:title="@string/action_delete_all_enteries"
         app:showAsAction="never" />
 
     <item
-        android:id="@+id/action_delete_all_entries"
-        android:title="@string/action_delete_all_enteries"
+        android:id="@+id/edit_uninstall"
+        android:title="@string/action_uninstall"
         app:showAsAction="never" />
 
 </menu>

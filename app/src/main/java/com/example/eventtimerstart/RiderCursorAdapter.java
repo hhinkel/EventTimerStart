@@ -8,9 +8,14 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class RiderCursorAdapter extends CursorAdapter {
 
-    public RiderCursorAdapter(Context context, Cursor cursor) {
+    RiderCursorAdapter(Context context, Cursor cursor) {
         super(context, cursor, 0);
     }
 
@@ -21,16 +26,24 @@ public class RiderCursorAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-        TextView numberTextView = (TextView) view.findViewById(R.id.number);
-        TextView summaryTextView = (TextView) view.findViewById(R.id.summary);
+        TextView numberTextView = view.findViewById(R.id.number);
+        TextView summaryTextView = view.findViewById(R.id.summary);
 
         int numberColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_RIDER_NUM);
         int startColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_RIDER_START);
 
         String riderNumber = cursor.getString(numberColumnIndex);
-        String startTime = cursor.getString(startColumnIndex);
+        long startTimeRaw = cursor.getLong(startColumnIndex);
+        String startTime = "Start Time: " + formatStartTime(startTimeRaw);
 
         numberTextView.setText(riderNumber);
         summaryTextView.setText(startTime);
+    }
+
+    private String formatStartTime(long timeRaw) {
+        Timestamp ts = new Timestamp(timeRaw);
+        Date time = new Date(ts.getTime());
+        SimpleDateFormat format = new SimpleDateFormat("hh:mm:ss:SS", Locale.getDefault());
+        return format.format(time);
     }
 }
