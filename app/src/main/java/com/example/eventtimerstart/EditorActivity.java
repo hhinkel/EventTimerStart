@@ -12,7 +12,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -30,7 +33,10 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     private static final int EXISTING_RIDER_LOADER = 0;
     private Uri mCurrentRiderUri;
     private EditText mNumberEditText;
+    private Spinner mDivisionEditSpinner;
     private String mNumber;
+    private String mOldNumber;
+    private String mDivision;
     private int mFenceNum;
     private long mStartTime;
     private long mFinishTime;
@@ -57,8 +63,36 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         getSupportLoaderManager().initLoader(EXISTING_RIDER_LOADER, null, this);
 
         mNumberEditText = findViewById(R.id.edit_rider_number);
+        mDivisionEditSpinner = findViewById(R.id.edit_spinner_division);
 
         mNumberEditText.setOnTouchListener(mTouchListener);
+        mDivisionEditSpinner.setOnTouchListener(mTouchListener);
+
+        setupSpinner();
+    }
+
+    private void setupSpinner() {
+        ArrayAdapter divisionSpinnerAdapter = ArrayAdapter.createFromResource(this,
+                R.array.array_division_options, android.R.layout.simple_spinner_item);
+        divisionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+        mDivisionEditSpinner.setAdapter(divisionSpinnerAdapter);
+
+        mDivisionEditSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selection = (String) parent.getItemAtPosition(position);
+                if (!TextUtils.isEmpty(selection)) {
+                    mDivision = selection;
+                } else {
+                    mDivision = "Division Unknown";
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                mDivision = "Division Unknown";
+            }
+        });
     }
 
     private void saveRider() {
@@ -71,6 +105,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
         ContentValues values = new ContentValues();
         values.put(RiderContract.RiderEntry.COLUMN_RIDER_NUM, mNumber);
+        values.put(RiderContract.RiderEntry.COLUMN_DIVISION, mDivision);
+        values.put(RiderContract.RiderEntry.COLUMN_EDIT, mOldNumber);
 
         if (mCurrentRiderUri == null) {
             Uri newUri = getContentResolver().insert(RiderContract.RiderEntry.CONTENT_URI, values);
@@ -90,13 +126,15 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         }
         Context context = getApplicationContext();
         MqttHelper mqttHelper = new MqttHelper(context);
-        Rider rider = new Rider(Integer.parseInt(mNumber), mFenceNum, mStartTime, mFinishTime);
+        Rider rider = new Rider(Integer.parseInt(mNumber), mDivision, mFenceNum, mStartTime, mFinishTime, mOldNumber);
         String msg = createMessageString(rider);
         mqttHelper.connect(msg);
     }
 
     private String createMessageString(Rider rider) {
-        return rider.toString();
+
+        return rider.getRiderNumber() + "," + rider.getDivision() + "," + rider.getFenceNumber()
+                + "," + rider.getStartTime() + "," + rider.getFinishTime() + "," + rider.getEdit();
     }
 
     @Override
@@ -167,9 +205,11 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         String[] projection = {
                 RiderContract.RiderEntry._ID,
                 RiderContract.RiderEntry.COLUMN_RIDER_NUM,
+                RiderContract.RiderEntry.COLUMN_DIVISION,
                 RiderContract.RiderEntry.COLUMN_FENCE_NUM,
                 RiderContract.RiderEntry.COLUMN_RIDER_START,
-                RiderContract.RiderEntry.COLUMN_RIDER_FINISH };
+                RiderContract.RiderEntry.COLUMN_RIDER_FINISH,
+                RiderContract.RiderEntry.COLUMN_EDIT };
 
         return new CursorLoader(this,
                 mCurrentRiderUri,
@@ -187,16 +227,56 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
         if (cursor.moveToFirst()) {
             int riderColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_RIDER_NUM);
+            int divisionColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_DIVISION);
             int fenceColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_FENCE_NUM);
             int startColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_RIDER_START);
             int finishColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_RIDER_FINISH);
+            int editColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_EDIT);
 
             mNumber = cursor.getString(riderColumnIndex);
+            String division = cursor.getString(divisionColumnIndex);
             mFenceNum = cursor.getInt(fenceColumnIndex);
             mStartTime = cursor.getLong(startColumnIndex);
             mFinishTime = cursor.getLong(finishColumnIndex);
+            String oldNumber = cursor.getString(editColumnIndex);
 
             mNumberEditText.setText(mNumber);
+            //This sets up the old number in case we change the number the server can find the edit
+            //and make the appropriate change.
+            if(oldNumber != null)
+                mOldNumber = oldNumber;
+            else
+                mOldNumber = mNumber;
+
+            switch (division) {
+                case "Advanced":
+                    mDivisionEditSpinner.setSelection(0);
+                    break;
+                case "Intermediate":
+                    mDivisionEditSpinner.setSelection(1);
+                    break;
+                case "Preliminary":
+                    mDivisionEditSpinner.setSelection(2);
+                    break;
+                case "Modified":
+                    mDivisionEditSpinner.setSelection(3);
+                    break;
+                case "Training":
+                    mDivisionEditSpinner.setSelection(4);
+                    break;
+                case "Novice":
+                    mDivisionEditSpinner.setSelection(5);
+                    break;
+                case "Beginner Novice":
+                    mDivisionEditSpinner.setSelection(6);
+                    break;
+                case "Starter":
+                    mDivisionEditSpinner.setSelection(7);
+                    break;
+                case "Division Unknown":
+                    mDivisionEditSpinner.setSelection(8);
+                    break;
+            }
         }
     }
 
@@ -243,6 +323,13 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     private void deleteRider() {
         if (mCurrentRiderUri != null) {
+
+            Context context = getApplicationContext();
+            MqttHelper mqttHelper = new MqttHelper(context);
+            Rider rider = new Rider(Integer.parseInt(mNumber), mDivision, mFenceNum, mStartTime, mFinishTime, "D");
+            String msg = createMessageString(rider);
+            mqttHelper.connect(msg);
+
             int rowsDeleted = getContentResolver().delete(mCurrentRiderUri, null, null);
             if (rowsDeleted == 0) {
                 Toast.makeText(this, getString(R.string.editor_delete_rider_failed), Toast.LENGTH_SHORT).show();

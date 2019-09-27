@@ -27,16 +27,25 @@ public class RiderCursorAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
         TextView numberTextView = view.findViewById(R.id.number);
+        TextView divisionTextView = view.findViewById(R.id.division);
+        TextView editTextView = view.findViewById(R.id.edited);
         TextView summaryTextView = view.findViewById(R.id.summary);
 
         int numberColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_RIDER_NUM);
+        int divisionColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_DIVISION);
         int startColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_RIDER_START);
+        int editedColumnIndex = cursor.getColumnIndex(RiderContract.RiderEntry.COLUMN_EDIT);
 
         String riderNumber = cursor.getString(numberColumnIndex);
+        String division = cursor.getString(divisionColumnIndex);
+        String editRaw = cursor.getString(editedColumnIndex);
         long startTimeRaw = cursor.getLong(startColumnIndex);
         String startTime = "Start Time: " + formatStartTime(startTimeRaw);
 
         numberTextView.setText(riderNumber);
+        divisionTextView.setText(division);
+        if(editRaw != null)
+            editTextView.setText("Edited");
         summaryTextView.setText(startTime);
     }
 

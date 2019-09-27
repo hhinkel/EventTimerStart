@@ -14,8 +14,8 @@
     <string name="clear">Clear</string>
     <string name="rNumber">Rider Number</string>
     <string name="start">Start</string>
-    <string name="action_view_all_enteries">View Entered Data</string>
-    <string name="action_delete_all_enteries">Delete Entered Data</string>
+    <string name="action_view_all_entries">View Entered Data</string>
+    <string name="action_delete_all_entries">Delete Entered Data</string>
     <string name="action_uninstall">Uninstall</string>
     <string name="empty_view_title_text">No Riders yet</string>
     <string name="empty_view_subtitle_text">Nope</string>
@@ -27,7 +27,8 @@
     <string name="editor_insert_rider_success">Insert Rider Succeeded</string>
     <string name="editor_update_rider_failed">Update Rider Failed</string>
     <string name="editor_update_rider_success">Update Rider Succeeded</string>
-    <string name="delete_dialog_msg">Are you sure you want to delete?</string>
+    <string name="delete_dialog_msg">Are you sure you want to delete this rider?</string>
+    <string name="delete_all_dialog_msg">Are you sure you want to delete all riders?</string>
     <string name="discard">Discard Changes?</string>
     <string name="keep_editing">Keep Changes?</string>
     <string name="delete">Delete</string>
@@ -36,4 +37,5 @@
     <string name="editor_delete_rider_success">Edit Rider Succeeded</string>
     <string name="action_delete">Delete</string>
     <string name="action_save">Save</string>
+    <string name="division">Division</string>
 </resources>

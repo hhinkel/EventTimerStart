@@ -182,4 +182,3 @@ public class RiderProvider extends ContentProvider {
         }
     }
 }
-
