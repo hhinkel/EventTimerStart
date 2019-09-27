@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public Rider saveRiderData (String number, long startTime){
         int num = Integer.parseInt(number);
-        return new Rider(num, division, 99, startTime, 0, null);
+        return new Rider(num, division, 0, startTime, 0, null);
     }
 
     private void insertRider(Rider rider){
