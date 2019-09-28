@@ -1,20 +1,27 @@
 package com.example.eventtimerstart;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.Toast;
-import android.database.sqlite.SQLiteDatabase;
+
+import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
@@ -22,20 +29,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import com.example.eventtimerstart.Rider;
-
-import org.eclipse.paho.android.service.MqttAndroidClient;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import com.example.eventtimerstart.RiderContract.RiderEntry;
-
-//TODO: Create Finish program
-
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     //Global Variables
     Button[] btn = new Button[13];
     EditText userInput;
 
+    private Spinner divisionSpinner;
+    private String division;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,10 +58,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btn[11] = findViewById(R.id.buttonClear);
         btn[12] = findViewById(R.id.buttonStart);
 
+        divisionSpinner = findViewById(R.id.spinner_division);
+
         //Setup on click listener
         for(int i = 0; i < 13; i++){
             btn[i].setOnClickListener(this);
         }
+
+        setupDivisionSpinner();
     }
 
 
@@ -116,6 +121,31 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private void setupDivisionSpinner() {
+        ArrayAdapter divisionSpinnerAdapter = ArrayAdapter.createFromResource(this,
+                R.array.array_division_options, android.R.layout.simple_spinner_item);
+
+        divisionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+
+        divisionSpinner.setAdapter(divisionSpinnerAdapter);
+
+        divisionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selection = (String) parent.getItemAtPosition(position);
+                if (!TextUtils.isEmpty(selection)) {
+                    division = selection;
+                } else {
+                    division = "Division Unknown";
+                }
+            }
+
+            public void onNothingSelected(AdapterView<?> parent) {
+                division = "Division Unknown";
+            }
+        });
+    }
+
     public void addToArray(String number) {
         userInput = findViewById(R.id.numberEntered);
         userInput.append(number);
@@ -125,11 +155,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int sLen = input.length();
 
         if(sLen > 0) {
-          String selection = input.getText().toString();
-          String result = input.getText().toString().replace(selection, "");
-          input.setText(result);
-          input.setSelection(input.getText().length());
-          userInput = input;
+            String selection = input.getText().toString();
+            String result = input.getText().toString().replace(selection, "");
+            input.setText(result);
+            input.setSelection(input.getText().length());
+            userInput = input;
         }
     }
 
@@ -157,7 +187,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //TODO: Encrypt data
             MqttHelper mqttHelper = new MqttHelper(context);
             String msg = createMessageString(rider);
-            mqttHelper.connect(mqttHelper, msg);
+            mqttHelper.connect(msg);
         } else {
             numberError();
         }
@@ -175,16 +205,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     public Rider saveRiderData (String number, long startTime){
         int num = Integer.parseInt(number);
-        return new Rider(num, 0, startTime, 0);
+        return new Rider(num, division, 0, startTime, 0, null);
     }
 
     private void insertRider(Rider rider){
 
-        //RiderDbHelper mDbHelper = new RiderDbHelper(this);
-        //SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
         ContentValues values = new ContentValues();
         values.put(RiderContract.RiderEntry.COLUMN_RIDER_NUM, rider.getRiderNumber());
+        values.put(RiderContract.RiderEntry.COLUMN_DIVISION, rider.getDivision());
         values.put(RiderContract.RiderEntry.COLUMN_FENCE_NUM, 0);
         values.put(RiderContract.RiderEntry.COLUMN_RIDER_START, rider.getStartTime());
         values.put(RiderContract.RiderEntry.COLUMN_RIDER_FINISH, 0);
@@ -204,7 +232,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     private String createMessageString (Rider rider) {
-        return rider.toString();
+
+        return rider.getRiderNumber() + "," + rider.getDivision() + "," + rider.getFenceNumber()
+                + "," + rider.getStartTime() + "," + rider.getFinishTime() + "," + rider.getEdit();
     }
 
     @Override
@@ -213,9 +243,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return true;
     }
 
-    private void deleteAllRides() {
+    private void deleteAllRiders() {
         int rowsDeleted = getContentResolver().delete(RiderContract.RiderEntry.CONTENT_URI, null, null);
-        Log.v("CatalogActivity", rowsDeleted + " rows deleted from rider database");
+        Log.v("MainActivity", rowsDeleted + " rows deleted from rider database");
     }
 
     private void uninstallApp() {}
@@ -228,12 +258,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(catalogIntent);
                 return true;
             case R.id.action_delete_all_entries:
-                deleteAllRides();
+                showDeleteConfirmationDialog();
                 return true;
             case R.id.action_uninstall:
                 uninstallApp();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showDeleteConfirmationDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.delete_all_dialog_msg);
+        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                deleteAllRiders();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int i) {
+                if (dialog != null)
+                    dialog.dismiss();
+            }
+        });
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
     }
 }
