@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,12 +20,9 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.Toast;
-import android.view.ViewGroup.LayoutParams;
 
 import org.eclipse.paho.client.mqttv3.MqttException;
 
@@ -40,9 +36,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     //Global Variables
     Button[] btn = new Button[13];
-    Button closePopupButton;
     EditText userInput;
-    PopupWindow popup;
     ConstraintLayout relativeLayout;
 
     private Spinner divisionSpinner;
