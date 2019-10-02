@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             String result = input.getText().toString().replace(selection, "");
             input.setText(result);
             input.setSelection(input.getText().length());
-            userInput = input;
+            userInput = null;
         }
     }
 
@@ -189,7 +189,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if (input == null) {
             showNumberErrorDialog(now, startTime);
-            clearNumber(userInput);
         } else {
             processNumber(input.getText().toString(), now, startTime);
             clearNumber(userInput);
@@ -249,6 +248,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 processNumber(userInput.getText().toString(), now, startTime);
+                clearNumber(userInput);
             }
         });
         AlertDialog alertDialog = builder.create();
