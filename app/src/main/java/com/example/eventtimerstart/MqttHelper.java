@@ -20,11 +20,13 @@ public class MqttHelper {
 
     final private String clientId = "StartApp";
     final private String subscriptionTopic = "eventTimer";
+    //final private String subscriptionTopic;
 
     final private String username = "yrzlekwy";
     final private String key = "";
 
     public MqttHelper(Context context) {
+
         mqttAndroidClient = new MqttAndroidClient(context, serverUri, clientId);
         mqttAndroidClient.setCallback(new MqttCallbackExtended(){
            @Override

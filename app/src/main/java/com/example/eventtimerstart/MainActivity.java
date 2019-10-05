@@ -47,6 +47,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //get setup data
+
+        String jsonData = Utils.loadJSONSetupData(getApplicationContext());
+
         //Register the buttons
         btn[0] = findViewById(R.id.button0);
         btn[1] = findViewById(R.id.button1);
