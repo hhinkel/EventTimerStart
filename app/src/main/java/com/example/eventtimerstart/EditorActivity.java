@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -12,10 +13,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.Spinner;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,6 +27,7 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.content.CursorLoader;
 import androidx.loader.content.Loader;
 
+import java.util.Arrays;
 
 
 public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -33,15 +35,18 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     private static final int EXISTING_RIDER_LOADER = 0;
     private Uri mCurrentRiderUri;
     private EditText mNumberEditText;
-    private Spinner mDivisionEditSpinner;
     private String mNumber;
     private String mOldNumber;
-    private String mDivision;
+    private String mDivisionString;
+    RadioButton[] mDivision;
+    String[] mDivisionArray;
+    RadioGroup mDivisionGroup;
     private int mFenceNum;
     private long mStartTime;
     private long mFinishTime;
-
     private boolean mRiderHasChanged = false;
+    Context mContext;
+
 
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
@@ -56,47 +61,50 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         super.onCreate(savedInstanceState);
         setContentView(R.layout.layout_item);
 
+        mContext = getApplicationContext();
+
         Intent intent = getIntent();
         mCurrentRiderUri = intent.getData();
 
         setTitle(getString(R.string.editor_activity_title_edit_rider));
         getSupportLoaderManager().initLoader(EXISTING_RIDER_LOADER, null, this);
 
+        final LinearLayout layout = findViewById(R.id.item_layout);
         mNumberEditText = findViewById(R.id.edit_rider_number);
-        mDivisionEditSpinner = findViewById(R.id.edit_spinner_division);
 
         mNumberEditText.setOnTouchListener(mTouchListener);
-        mDivisionEditSpinner.setOnTouchListener(mTouchListener);
 
-        setupSpinner();
+
+        createRadioGroup(mContext, layout);
+
     }
 
-    private void setupSpinner() {
-        ArrayAdapter divisionSpinnerAdapter = ArrayAdapter.createFromResource(this,
-                R.array.array_division_options, android.R.layout.simple_spinner_item);
-        divisionSpinnerAdapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
-        mDivisionEditSpinner.setAdapter(divisionSpinnerAdapter);
+    private void createRadioGroup(Context context, LinearLayout layout) {
+        mDivisionGroup = new RadioGroup(context);
+        mDivisionGroup.setOrientation(RadioGroup.VERTICAL);
 
-        mDivisionEditSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String selection = (String) parent.getItemAtPosition(position);
-                if (!TextUtils.isEmpty(selection)) {
-                    mDivision = selection;
-                } else {
-                    mDivision = "Division Unknown";
-                }
-            }
+        mDivisionArray = getResources().getStringArray(R.array.array_division_options);
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                mDivision = "Division Unknown";
-            }
-        });
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+
+        mDivisionGroup.setLayoutParams(layoutParams);
+        mDivision = new RadioButton[mDivisionArray.length];
+
+        for(int i = 0; i < mDivisionArray.length; i++){
+            mDivision[i] = new RadioButton(context);
+            mDivision[i].setText(mDivisionArray[i]);
+            mDivision[i].setTextColor(Color.BLACK);
+            mDivisionGroup.addView(mDivision[i]);
+        }
+
+        layout.addView(mDivisionGroup);
     }
 
     private void saveRider() {
         mNumber = mNumberEditText.getText().toString().trim();
+        int index = mDivisionGroup.getCheckedRadioButtonId();
+        mDivisionString = mDivisionArray[index];
 
         if (mCurrentRiderUri == null &&
                 TextUtils.isEmpty(mNumber)) {
@@ -105,7 +113,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
         ContentValues values = new ContentValues();
         values.put(RiderContract.RiderEntry.COLUMN_RIDER_NUM, mNumber);
-        values.put(RiderContract.RiderEntry.COLUMN_DIVISION, mDivision);
+        values.put(RiderContract.RiderEntry.COLUMN_DIVISION, mDivisionString);
         values.put(RiderContract.RiderEntry.COLUMN_EDIT, mOldNumber);
 
         if (mCurrentRiderUri == null) {
@@ -124,9 +132,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 Toast.makeText(this, getString(R.string.editor_update_rider_success), Toast.LENGTH_SHORT).show();
             }
         }
-        Context context = getApplicationContext();
-        MqttHelper mqttHelper = new MqttHelper(context);
-        Rider rider = new Rider(Integer.parseInt(mNumber), mDivision, mFenceNum, mStartTime, mFinishTime, mOldNumber);
+        MqttHelper mqttHelper = new MqttHelper(mContext);
+        Rider rider = new Rider(Integer.parseInt(mNumber), mDivisionString, mFenceNum, mStartTime, mFinishTime, mOldNumber);
         String msg = createMessageString(rider);
         mqttHelper.connect(msg);
     }
@@ -240,43 +247,17 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             mFinishTime = cursor.getLong(finishColumnIndex);
             String oldNumber = cursor.getString(editColumnIndex);
 
+            //Check the division that is currently associated with the rider.
             mNumberEditText.setText(mNumber);
+            int index = Arrays.asList(mDivisionArray).indexOf(division);
+            mDivision[index].setChecked(true);
+
             //This sets up the old number in case we change the number the server can find the edit
             //and make the appropriate change.
             if(oldNumber != null)
                 mOldNumber = oldNumber;
             else
                 mOldNumber = mNumber;
-
-            switch (division) {
-                case "Advanced":
-                    mDivisionEditSpinner.setSelection(0);
-                    break;
-                case "Intermediate":
-                    mDivisionEditSpinner.setSelection(1);
-                    break;
-                case "Preliminary":
-                    mDivisionEditSpinner.setSelection(2);
-                    break;
-                case "Modified":
-                    mDivisionEditSpinner.setSelection(3);
-                    break;
-                case "Training":
-                    mDivisionEditSpinner.setSelection(4);
-                    break;
-                case "Novice":
-                    mDivisionEditSpinner.setSelection(5);
-                    break;
-                case "Beginner Novice":
-                    mDivisionEditSpinner.setSelection(6);
-                    break;
-                case "Starter":
-                    mDivisionEditSpinner.setSelection(7);
-                    break;
-                case "Division Unknown":
-                    mDivisionEditSpinner.setSelection(8);
-                    break;
-            }
         }
     }
 
@@ -326,7 +307,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
             Context context = getApplicationContext();
             MqttHelper mqttHelper = new MqttHelper(context);
-            Rider rider = new Rider(Integer.parseInt(mNumber), mDivision, mFenceNum, mStartTime, mFinishTime, "D");
+            Rider rider = new Rider(Integer.parseInt(mNumber), mDivisionString, mFenceNum, mStartTime, mFinishTime, "D");
             String msg = createMessageString(rider);
             mqttHelper.connect(msg);
 

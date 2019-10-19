@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -207,6 +208,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         CharSequence text = "Rider: " + number + " Start Time: " + format.format(startTime);
         int duration = Toast.LENGTH_LONG;
         Toast toast = Toast.makeText(context, text, duration);
+        toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
     }
 
@@ -234,7 +236,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         final View dialogView = inflater.inflate(R.layout.layout_popup, null);
         builder.setView(dialogView);
 
-        userInput = (EditText) dialogView.findViewById(R.id.add_number);
+        userInput = dialogView.findViewById(R.id.add_number);
 
         builder.setTitle("Please enter the Rider Number");
         builder.setMessage("Enter Number");
