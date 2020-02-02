@@ -228,10 +228,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SimpleDateFormat format = new SimpleDateFormat("hh:mm:ss:SS", Locale.getDefault());
         Date startTime = now.getTime();
         CharSequence text = "Rider: " + number + " Start Time: " + format.format(startTime);
-        int duration = Toast.LENGTH_LONG;
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.setGravity(Gravity.CENTER, 0, 0);
-        toast.show();
+        showToast(text);
     }
 
     public Rider saveRiderData (String number, long startTime){
@@ -376,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         String state = Environment.getExternalStorageState();
         String external = Environment.getExternalStorageDirectory().toString();
-        String fileName = "0" + RiderDbHelper.DATABASE + ".csv";
+        String fileName = "Start" + RiderDbHelper.DATABASE + ".csv";
 
         if (Environment.MEDIA_MOUNTED.equals(state)) {
             if (Build.VERSION.SDK_INT >= 23) {
@@ -398,14 +395,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         File csvFile = new File(path, fileName);
         if (!csvFile.exists()) {
             createCSVFile(dbHelper, csvFile);
+            showToast("CSV File for Start Exported");
         } else {
             if(csvFile.lastModified() < Calendar.DATE) {
                 csvFile.delete();
                 createCSVFile(dbHelper, csvFile);
+                showToast("CSV File for Start Exported");
             } else {
                 showFileDeleteErrorDialog();
             }
         }
+    }
+
+    private void showToast(CharSequence text) {
+        Context context = getApplicationContext();
+        int duration = Toast.LENGTH_LONG;
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.setGravity(Gravity.CENTER, 0, 0);
+        toast.show();
     }
 
     private File checkForDir(String rootPath, String addPath) {
